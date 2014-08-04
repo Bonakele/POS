@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<script type="text/javascript">
+function getData(thisObj, thisEvent){
+	var empName = document.forms["data"]["employeeName"].value;
+	var empType = document.forms["data"]["position"].value;
+	
+	// create JSON
+	var jsonObj = {
+	    "empName": empName,
+	    "empType": empType,
+	   
+	};
+	// convert JSON to string
+	var jsonString = JSON.stringify(jsonObj);
+	
+	document.forms["data"]["jsonData"].value = jsonString;
+	 document.getElementById('msg').innerHTML = JSON.stringify(jsonObj);
+}
+function validate(){
+	var empName = document.forms["data"]["employeeName"].value;
+	if(empName==""||empName==null){
+			alert("Enter That Name");
+	}
+}
+
+</script>
+</head>
+<body>
+	<form name="data" Method="get" >
+		Input:<p id="msg"></p>
+		
+		Employee Name : <input type="text" id="employeeName"></input><br/>
+		Employee Type : <input type="text" id="position"></input><br/>
+		
+		<input type="hidden" id="jsonData" name="jsonData" />
+		
+		<input type="submit" value="Add" id="add" onclick="return getData(this, event);">
+	</form>
+
+</body>
+</html>
