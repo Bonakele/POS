@@ -2,6 +2,7 @@ package com.pos.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -14,10 +15,22 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+
+@NamedQueries({
+	@NamedQuery(name = "ReturnItem.ById", query = "from ReturnItem where id=? "),
+	@NamedQuery(name = "ReturnItem.ByAllReturns", query = "from ReturnItem"), })
 
 @Entity
 @Table(name = "tblReturnItem")
+@XmlRootElement(name = "ReturnItem")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ReturnItem implements Serializable {
 
 	/**
@@ -31,10 +44,10 @@ public class ReturnItem implements Serializable {
 	private int id;
 
 	@Column(name = "ReturnItem_Reason")
-	private String Reason;
+	private String reason;
 
 	@Column(name = "ReturnItem_ReturnDate")
-	private Date returnDate;
+	private Date returnDate =new Date();
 
 	@Column(name = "ReturnItem_Amount")
 	private double returnAmount;
@@ -43,15 +56,7 @@ public class ReturnItem implements Serializable {
 
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "Returning_Employee", joinColumns = { @JoinColumn(name = "ReturnItem_Id") }, inverseJoinColumns = { @JoinColumn(name = "Employee_EmpNum") })
-	private Set<Employee> employee;
-
-//	@ManyToOne
-//	@JoinColumn(name = "Cashier_EmpNum")
-//	private Cashier cashier;
-//
-//	@ManyToOne
-//	@JoinColumn(name = "Admin_EmpNum")
-//	private Admin admin;
+	private Set<Employee> employee = new HashSet<Employee>();
 
 	@ManyToOne
 	@JoinColumn(name = "Client_Id")
@@ -59,8 +64,13 @@ public class ReturnItem implements Serializable {
 
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "Item_Return", joinColumns = { @JoinColumn(name = "ReturnItem_Id") }, inverseJoinColumns = { @JoinColumn(name = "Item_Id") })
-	private Set<Item> item;
+	private Set<Item> item = new HashSet<Item>();
 
+	
+	@ManyToOne
+	@JoinColumn(name = "Sale_Id")
+	private Sales sale;
+	
 	public ReturnItem() {
 
 		// TODO Auto-generated constructor stub
@@ -75,11 +85,11 @@ public class ReturnItem implements Serializable {
 	}
 
 	public String getReason() {
-		return Reason;
+		return reason;
 	}
 
 	public void setReason(String reason) {
-		Reason = reason;
+		this.reason = reason;
 	}
 
 	public Date getReturnDate() {
@@ -105,23 +115,7 @@ public class ReturnItem implements Serializable {
 	public void setEmployee(Set<Employee> employee) {
 		this.employee = employee;
 	}
-	
 
-//	public Cashier getCashier() {
-//		return cashier;
-//	}
-//
-//	public void setCashier(Cashier cashier) {
-//		this.cashier = cashier;
-//	}
-//
-//	public Admin getAdmin() {
-//		return admin;
-//	}
-//
-//	public void setAdmin(Admin admin) {
-//		this.admin = admin;
-//	}
 
 	public Set<Item> getItem() {
 		return item;
@@ -137,6 +131,14 @@ public class ReturnItem implements Serializable {
 
 	public void setClient(Client client) {
 		this.client = client;
+	}
+
+	public Sales getSale() {
+		return sale;
+	}
+
+	public void setSale(Sales sale) {
+		this.sale = sale;
 	}
 
 }

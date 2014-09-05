@@ -6,9 +6,9 @@ import com.pos.model.Employee;
 
 public interface EmployeeInterface {
 	
-	public int save(Employee employee);
-	public Employee getEmployeeById(int empNum);
+	public int saveOrUpdate(Employee employee);
+	public Employee getEmployeeByEmpNum(int empNum);
 	public List<Employee> getAllEmployees();
-
+	public Employee getEmployeeBySA_Id(String saId);
 
 }

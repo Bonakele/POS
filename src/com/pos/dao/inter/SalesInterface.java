@@ -1,14 +1,17 @@
 package com.pos.dao.inter;
 
+import java.util.Date;
 import java.util.List;
 
 import com.pos.model.Sales;
 
 public interface SalesInterface {
 
-	void purchase(Sales sale);
-	void edit(int x);
-	void delete(int x);
-	List<Sales> view();
-	List<Sales> search(int x);
+	public int saveSale(Sales sale);
+
+	public Sales getSaleById(int id);
+
+	public List<Sales> getAllSales();
+	
+	public Date exchangeDate();
 }

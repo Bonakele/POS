@@ -1,8 +1,9 @@
 package com.pos.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.HashSet;
+
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -15,16 +16,30 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.validator.constraints.Length;
 
+@NamedQueries({
+		@NamedQuery(name = "Employee.ByEmpNum", query = "from Employee where empNum=? "),
+		@NamedQuery(name = "Employee.BySA_Id", query = "from Employee where SA_id=? "),
+		@NamedQuery(name = "Employee.ByAllEmployees", query = "from Employee"), })
 @Entity
 @Table(name = "tblEmployee")
+@XmlRootElement(name = "Employee")
+@XmlAccessorType(XmlAccessType.FIELD)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "Employee_Type", discriminatorType = DiscriminatorType.STRING)
 public class Employee implements Serializable {
@@ -63,6 +78,9 @@ public class Employee implements Serializable {
 	// telNumberWork need to be 10 chars
 	private String telNumberMobile;
 
+	@Column(name = "Employee_Occupation")
+	private String occupation;// admin or cashier or driver
+
 	@Column(name = "Employee_Password")
 	private String password;
 
@@ -71,16 +89,22 @@ public class Employee implements Serializable {
 
 	// Relationships
 	@ManyToMany(mappedBy = "employee", cascade = CascadeType.ALL)
-	private Set<ReturnItem> returnItem;
-	
-	@OneToMany(mappedBy="cashier",cascade=CascadeType.ALL)
-	private List<Sales> sales;
-	
-	@OneToMany(mappedBy="cashier",cascade=CascadeType.ALL)
-	private List<CashUp> cashUp=new ArrayList<CashUp>();
+	private Set<ReturnItem> returnItem = new HashSet<ReturnItem>();
+
+	@OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+	private Set<Sales> sales = new HashSet<Sales>();
+
+	@ManyToOne
+	@JoinColumn(name = "CashUp_Id")
+	private CashUp cashUp;
+
+	@OneToOne(mappedBy = "employee", cascade = CascadeType.ALL)
+	private OverallCashUp overallCashUp;
+
+	@ManyToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+	private Set<Exchange> exchange = new HashSet<Exchange>();
 
 	public Employee() {
-
 		// TODO Auto-generated constructor stub
 	}
 
@@ -140,6 +164,14 @@ public class Employee implements Serializable {
 		this.telNumberMobile = telNumberMobile;
 	}
 
+	public String getOccupation() {
+		return occupation;
+	}
+
+	public void setOccupation(String occupation) {
+		this.occupation = occupation;
+	}
+
 	public String getPassword() {
 		return password;
 	}
@@ -164,12 +196,36 @@ public class Employee implements Serializable {
 		this.returnItem = returnItem;
 	}
 
-	public List<Sales> getSales() {
+	public Set<Sales> getSales() {
 		return sales;
 	}
 
-	public void setSales(List<Sales> sales) {
+	public void setSales(Set<Sales> sales) {
 		this.sales = sales;
+	}
+
+	public Set<Exchange> getExchange() {
+		return exchange;
+	}
+
+	public void setExchange(Set<Exchange> exchange) {
+		this.exchange = exchange;
+	}
+
+	public CashUp getCashUp() {
+		return cashUp;
+	}
+
+	public void setCashUp(CashUp cashUp) {
+		this.cashUp = cashUp;
+	}
+
+	public OverallCashUp getOverallCashUp() {
+		return overallCashUp;
+	}
+
+	public void setOverallCashUp(OverallCashUp overallCashUp) {
+		this.overallCashUp = overallCashUp;
 	}
 
 }

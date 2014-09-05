@@ -2,6 +2,7 @@ package com.pos.dao;
 
 import java.util.List;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -10,86 +11,63 @@ import com.pos.helper.Helper;
 import com.pos.model.Item;
 import com.pos.model.ReturnItem;
 
-public class ItemImplementation implements ItemInterface{
+public class ItemImplementation implements ItemInterface {
 
-	@Override
-	public void save(Item item) {
-		SessionFactory session=Helper.getSessionFactory();
-		Session sess=session.openSession();
-		sess.beginTransaction();
-		sess.saveOrUpdate(item);
-		sess.getTransaction().commit();
-		sess.close();
-		
-	}
-	
-	public Item getItemById(int id) {
+	SessionFactory session = Helper.getSessionFactory();
 
-		SessionFactory session = Helper.getSessionFactory();
-		Session sess = session.openSession();
-
-		sess.beginTransaction();
-
-		Item item = (Item) sess.load(Item.class, id);
-
-		return item;
-
-	}
-	
 	@Override
 	public int saveItem(Item item) {
-		SessionFactory session = Helper.getSessionFactory();
+
 		Session sess = session.openSession();
 		sess.beginTransaction();
 
-		sess.save(item);
-		
+		sess.saveOrUpdate(item);
+
 		sess.getTransaction().commit();
 		sess.close();
 
 		return item.getId();
 	}
 
+	public Item getItemById(int id) {
 
-	@Override
-	public void edit(int x) {
-		// TODO Auto-generated method stub
-		
+		Session sess = session.openSession();
+
+		Query query = (Query) sess.getNamedQuery("Item.ById");
+		query.setInteger(0, id);
+		Item item = (Item) query.uniqueResult();
+
+		return item;
+
 	}
 
 	@Override
-	public void delete(int x) {
-		// TODO Auto-generated method stub
-		
-	}
+	public List<Item> getAllItems() {
 
-	@Override
-	public List<Item> view() {
-		SessionFactory session=Helper.getSessionFactory();
-		Session sess=session.openSession();
-		
-		sess.beginTransaction();
-		
-		org.hibernate.Query query=sess.createQuery("from Item");
-        List<Item> list=query.list();
-	
+		Session sess = session.openSession();
+
+		Query query = (Query) sess.getNamedQuery("Item.ByAllItems");
+		List<Item> list = query.list();
+
 		return list;
 	}
-
-	@Override
-	public Item getItem(int x) {
 	
-		SessionFactory session=Helper.getSessionFactory();
-		Session sess=session.openSession();
-		sess.beginTransaction();
-		//org.hibernate.Query query=sess.createQuery(Item.class, x);
-		Item item = (Item) sess.load(Item.class, x);
-		
-		/*Item item=(Item)query;	
-		sess.close();*/
-		
-		return item;
+	
+	public List<Item> getItemByTypeSizeColour(String type, String colour, String size) {
+
+		Session sess = session.openSession();
+
+		Query query = (Query) sess.getNamedQuery("Item.Return");
+		query.setString(0, type);
+		query.setString(0, colour);
+		query.setString(0, size);
+		List<Item> list = query.list();
+
+		return list;
+
 	}
+	
 
 	
+
 }

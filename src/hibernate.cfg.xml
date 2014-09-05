@@ -18,7 +18,7 @@
 
 <property name="connection.pool_size">1</property>
 
-<property name="show_sql">false</property>
+<property name="show_sql">true</property>
 
 <property name="hbm2ddl.auto">update</property>
 
@@ -27,11 +27,13 @@
 <mapping class="com.pos.model.Item"/>
 <mapping class="com.pos.model.Admin"/>
 <mapping class="com.pos.model.Cashier"/>
+<mapping class="com.pos.model.OverallCashUp"/>
 <mapping class="com.pos.model.Employee"/>
 <mapping class="com.pos.model.ReturnItem"/>
 <mapping class="com.pos.model.CashUp"/>
 <mapping class="com.pos.model.Sales"/>
-
+<mapping class="com.pos.model.Exchange"/>
+<mapping class="com.pos.model.TimeSheet"/>
 
 </session-factory>
 </hibernate-configuration>

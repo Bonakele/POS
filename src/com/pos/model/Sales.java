@@ -1,8 +1,10 @@
 package com.pos.model;
 
 import java.io.Serializable;
+
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -15,87 +17,92 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
-
+@NamedQueries({
+		@NamedQuery(name = "Sales.ById", query = "from Sales where id=? "),
+		@NamedQuery(name = "Sales.ByAllSales", query = "from Sales"),
+		@NamedQuery(name = "Sales.ByCashierPerDay", query = "SELECT YEAR(date) as SalesYear, MONTH(date) as SalesMonth,DAY(date) as Salesday,SUM(totalAmount) AS TotalSales FROM Sales GROUP BY YEAR(date), MONTH(date) ORDER BY YEAR(date), MONTH(date)"), 
+		/*@NamedQuery(name = "Sales.ByCashier", query = "SELECT employee, SUM(totalAmount), date FROM Sales WHERE employee = ?, GROUP BY DAY(date)")*/})
 @Entity
-@Table(name="tblSales")
+@Table(name = "tblSales")
+@XmlRootElement(name = "Sales")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Sales implements Serializable {
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	private int  sale_Id;
-	@Column(name="Sale_paymentType")
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "Sale_Id")
+	private int id;
+	@Column(name = "Sale_PaymentType")
 	private String paymentType;
-	@Column(name="Sale_totalAmount")
+	@Column(name = "Sale_TotalAmount")
 	private double totalAmount;
-	@Column(name="Sale_amountPayed")
+	@Column(name = "Sale_AmountPayed")
 	private double amountPayed;
-	@Column(name="Sale_change")
+	@Column(name = "Sale_Change")
 	private double change;
-	@Column(name="Sale_date")
-	private Date date=new Date();
-	
-	
+	@Column(name = "Sale_Date")
+	private Date date = new Date();
+
+	// Relationships
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	@JoinTable(name="Transactions",joinColumns = { 
-			@JoinColumn(name = "sale_Id") }, 
-			inverseJoinColumns = { @JoinColumn(name = "item_Id") })
-	private List<Item> items;
-	
+	@JoinTable(name = "Item_Sales", joinColumns = { @JoinColumn(name = "Sale_Id") }, inverseJoinColumns = { @JoinColumn(name = "Item_Id") })
+	private Set<Item> item = new HashSet<Item>();
+
 	@ManyToOne
-	@JoinColumn(name=" Cashier_Id")
-	private Cashier cashier;
+	@JoinColumn(name = "Employee_EmpNum")
+	private Employee employee;
+
+	@OneToMany
+	private Set<ReturnItem> returnItem = new HashSet<ReturnItem>();
+
+	@OneToOne(mappedBy = "sale", cascade = CascadeType.ALL)
+	private Order order;
+	
+	@OneToOne(mappedBy = "sale", cascade = CascadeType.ALL)
+	private CashUp cashUp;
+
+	@OneToMany(mappedBy = "sale", cascade = CascadeType.ALL)
+	private Set<Exchange> exchangeList =  new HashSet<Exchange>();
 	
 	public Sales() {
-	
+
 	}
-
-
-	public Sales(int sale_Id, String paymentType, double totalAmount, Date date) {
-
-		this.sale_Id = sale_Id;
-		this.paymentType = paymentType;
-		this.totalAmount = totalAmount;
-		this.date = date;
-	}
-
-
 
 	public double getTotalAmount() {
 		return totalAmount;
 	}
 
-
-
 	public void setTotalAmount(double totalAmount) {
 		this.totalAmount = totalAmount;
 	}
 
-
-
-	public Cashier getCashier() {
-		return cashier;
+	public Employee getEmployee() {
+		return employee;
 	}
 
-
-
-	public void setCashier(Cashier cashier) {
-		this.cashier = cashier;
+	public void setEmployee(Employee employee) {
+		this.employee = employee;
 	}
 
-
-
-	public int getSale_Id() {
-		return sale_Id;
+	public int getId() {
+		return id;
 	}
 
-	public void setSale_Id(int sale_Id) {
-		this.sale_Id = sale_Id;
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getPaymentType() {
@@ -118,32 +125,60 @@ public class Sales implements Serializable {
 		return amountPayed;
 	}
 
-
 	public void setAmountPayed(double amountPayed) {
 		this.amountPayed = amountPayed;
 	}
-
 
 	public double getChange() {
 		return change;
 	}
 
-
 	public void setChange(double change) {
 		this.change = change;
 	}
-
-
-	public List<Item> getItems() {
-		return items;
+	
+	public Order getOrder() {
+		return order;
 	}
 
+	public void setOrder(Order order) {
+		this.order = order;
+	}
 
-	public void setItems(List<Item> items) {
-		this.items = items;
+	public CashUp getCashUp() {
+		return cashUp;
+	}
+
+	public void setCashUp(CashUp cashUp) {
+		this.cashUp = cashUp;
+	}
+
+	public Set<Item> getItem() {
+		return item;
+	}
+
+	public void setItem(Set<Item> item) {
+		this.item = item;
+	}
+
+	public Set<ReturnItem> getReturnItem() {
+		return returnItem;
+	}
+
+	public void setReturnItem(Set<ReturnItem> returnItem) {
+		this.returnItem = returnItem;
+	}
+
+	public Set<Exchange> getExchangeList() {
+		return exchangeList;
+	}
+
+	public void setExchangeList(Set<Exchange> exchangeList) {
+		this.exchangeList = exchangeList;
 	}
 
 	
 	
 	
+
 }

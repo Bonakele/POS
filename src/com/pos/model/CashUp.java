@@ -1,8 +1,11 @@
 package com.pos.model;
 
 import java.io.Serializable;
-
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,13 +13,24 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+
+@NamedQueries({
+	@NamedQuery(name = "CashUp.ById", query = "from CashUp where id=? "),
+	@NamedQuery(name = "CashUp.ByAllCashUps", query = "from CashUp"), })
 
 @Entity
 @Table(name="tblCashUp")
+@XmlRootElement(name = "CashUp")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class CashUp implements Serializable{
 	/**
 	 * 
@@ -27,7 +41,7 @@ public class CashUp implements Serializable{
 	@Column(name="CashUp_Id")
 	private int id;
 	@Column(name="CashUp_Date")
-	private Date cDate=new Date();
+	private Date cashUpDate = new Date();
 	@Column(name="CashUp_Amount")
 	private double amount;
 	@Column(name="CashUp_Status")
@@ -36,45 +50,37 @@ public class CashUp implements Serializable{
 	private String comments;
 	@Column(name="CashUp_RegisterAmount")
 	private double registerAmount;
-	@Column(name="CashUp_TotalCash")
-	private double totalCashUp;
+
+	
+	
+	//Relationships
+	
+	@OneToMany(mappedBy="cashUp",cascade=CascadeType.ALL)
+	private Set<Employee> employee = new HashSet<Employee>();
+	
 	@ManyToOne
-	@JoinColumn(name="empId")
-	private Cashier cashier;
+	@JoinColumn(name = "OverallCashUp_Id")
+	private OverallCashUp overallCashUp;
 	
-	
-//	@OneToOne
-//	@PrimaryKeyJoinColumn
-//	private Cashier cashier1;
-	
-	
-	
-	
+	@OneToOne
+	@JoinColumn(name = "Sale_Id")
+	private Sales sale;
 	
 	public CashUp() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	
-	
-	
-	public double getTotalCashUp() {
-		return totalCashUp;
-	}
-	public void setTotalCashUp(double totalCashUp) {
-		this.totalCashUp = totalCashUp;
-	}
 	public int getId() {
 		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
 	}
-	public Date getcDate() {
-		return cDate;
+	public Date getCashUpDate() {
+		return cashUpDate;
 	}
-	public void setcDate(Date cDate) {
-		this.cDate = cDate;
+	public void setCashUpDate(Date cashUpDate) {
+		this.cashUpDate = cashUpDate;
 	}
 	public double getAmount() {
 		return amount;
@@ -94,24 +100,38 @@ public class CashUp implements Serializable{
 	public void setComments(String comments) {
 		this.comments = comments;
 	}
-	public Cashier getCashier() {
-	return cashier;
-}
-public void setCashier(Cashier cashier) {
-	this.cashier = cashier;
-	}
+
 	public double getRegisterAmount() {
 		return registerAmount;
 	}
 	public void setRegisterAmount(double registerAmount) {
 		this.registerAmount = registerAmount;
 	}
-//	public Cashier getCashier1() {
-//	return cashier1;
-//}
-//public void setCashier1(Cashier cashier1) {	
-//	this.cashier1 = cashier1;
-//	}
+
+	public Set<Employee> getEmployee() {
+		return employee;
+	}
+
+	public void setEmployee(Set<Employee> employee) {
+		this.employee = employee;
+	}
+
+	public Sales getSale() {
+		return sale;
+	}
+
+	public void setSale(Sales sale) {
+		this.sale = sale;
+	}
+
+	public OverallCashUp getOverallCashUp() {
+		return overallCashUp;
+	}
+
+	public void setOverallCashUp(OverallCashUp overallCashUp) {
+		this.overallCashUp = overallCashUp;
+	}
+
 
 
 	

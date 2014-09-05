@@ -2,6 +2,7 @@ package com.pos.dao;
 
 import java.util.List;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -11,13 +12,14 @@ import com.pos.model.Order;
 import com.pos.model.ReturnItem;
 
 public class ReturnItemImplementation implements ReturnItemInterface {
-	
-	public int save(ReturnItem returnItem) {
-		SessionFactory session = Helper.getSessionFactory();
+
+	SessionFactory session = Helper.getSessionFactory();
+
+	public int saveReturn(ReturnItem returnItem) {
+
 		Session sess = session.openSession();
 		sess.beginTransaction();
 
-		// sess.save(item);
 		sess.save(returnItem);
 
 		sess.getTransaction().commit();
@@ -28,27 +30,26 @@ public class ReturnItemImplementation implements ReturnItemInterface {
 
 	public ReturnItem getReturnById(int id) {
 
-		SessionFactory session = Helper.getSessionFactory();
 		Session sess = session.openSession();
 
-		sess.beginTransaction();
-
-		ReturnItem returnItem = (ReturnItem) sess.load(ReturnItem.class, id);
+		Query query = (Query) sess.getNamedQuery("ReturnItem.ById");
+		query.setInteger(0, id);
+		ReturnItem returnItem = (ReturnItem) query.uniqueResult();
 
 		return returnItem;
 
 	}
-	
+
 	public List<ReturnItem> getAllReturns() {
 
-		SessionFactory session = Helper.getSessionFactory();
 		Session sess = session.openSession();
 
-		sess.beginTransaction();
-
-		org.hibernate.Query query = sess.createQuery("from ReturnItem");
+		Query query = (Query) sess.getNamedQuery("ReturnItem.ByAllReturns");
 		List<ReturnItem> list = query.list();
 
 		return list;
 	}
+	
+	
+
 }

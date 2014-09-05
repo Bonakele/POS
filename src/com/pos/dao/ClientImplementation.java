@@ -1,98 +1,89 @@
 package com.pos.dao;
 
+import java.rmi.RemoteException;
 import java.util.List;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.hql.ast.util.SessionFactoryHelper;
 
 import com.pos.dao.inter.ClientInterface;
 import com.pos.helper.Helper;
 import com.pos.model.Client;
+import com.xml_fx.services.SAIDValidator.SAIDValidatorSoapProxy;
+import com.xml_fx.services.SAIDValidator.said_xsd.SaidType;
 
 public class ClientImplementation implements ClientInterface {
 
-	@Override
-	public void saveClient(Client client) {
-		SessionFactory session = Helper.getSessionFactory();
-		Session sess = session.openSession();
-		sess.beginTransaction();
-		sess.save(client);
-		sess.getTransaction().commit();
-		sess.close();
+	SessionFactory session = Helper.getSessionFactory();
+	SAIDValidatorSoapProxy validate = new SAIDValidatorSoapProxy();
 
-	}
+	public String saveClient(Client client) throws RemoteException {
 
-	public String save(Client client) {
+		/*SaidType idNum = validate.validateIdString("", client.getIdNum());*/
+	
+		/*if(idNum.isValid()==true)
+		{*/
+			Session sess = session.openSession();
+			sess.beginTransaction();
 
-		SessionFactory session = Helper.getSessionFactory();
-		Session sess = session.openSession();
-		sess.beginTransaction();
+			sess.save(client);
 
-		sess.save(client);
-
-		sess.getTransaction().commit();
-		sess.close();
+			sess.getTransaction().commit();
+			sess.close();
+		/*}
+		else {
+			
+			System.out.println("Uyishangane Ndoda");
+			
+		}
+		*/
+		
 
 		return client.getIdNum();
 	}
+	
+	public void updateClient(Client client){
+		
+		Session sess = session.openSession();
+		sess.beginTransaction();
 
-	@Override
-	public void edit(int x) {
-		// TODO Auto-generated method stub
+		sess.update(client);
+		sess.getTransaction().commit();//gettransaction.commit
 
+		sess.close();
 	}
 
-	@Override
-	public void delete(int x) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public List<Client> view() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public Client getClientById(String idNum) {
-		boolean isFound = false;
-		SessionFactory session = Helper.getSessionFactory();
+		
+	
 		Session sess = session.openSession();
 
-		sess.beginTransaction();
-
-		Client client = (Client) sess.load(Client.class, idNum);
-
+		Query query = (Query)sess.getNamedQuery("Client.ById");
+		query.setString(0,idNum);
+		Client client = (Client)query.uniqueResult();
+		
 		sess.close();
-
-		if (client != null) {
-			isFound = true;
-		}
 
 		return client;
 	}
 
 	@Override
-	public List<Client> search(String x) {
-		SessionFactory session = Helper.getSessionFactory();
+	public List<Client> getAllClients() {
+	
 		Session sess = session.openSession();
-		String y = x;
-		boolean isFound = false;
-		sess.beginTransaction();
 
-		org.hibernate.Query query = sess.createQuery("from Client Where idNum="
-				+ y);
+		Query query = (Query) sess.getNamedQuery("Client.ByAllClients");
+				
 
 		List<Client> list = query.list();
-		for (Client s : list) {
-			if (s.getIdNum() == y) {
-				isFound = true;
-
-			}
-		}
+	
 
 		return list;
 	}
-
+	
+	
 }

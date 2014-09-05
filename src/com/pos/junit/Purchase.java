@@ -1,4 +1,4 @@
-package com.pos.junit;
+/*package com.pos.junit;
 
 import static org.junit.Assert.*;
 
@@ -17,6 +17,7 @@ import com.pos.dao.EmployeeImplementation;
 import com.pos.dao.ItemImplementation;
 import com.pos.dao.SalesImplementation;
 import com.pos.model.Cashier;
+import com.pos.model.Employee;
 import com.pos.model.Item;
 import com.pos.model.Sales;
 
@@ -29,14 +30,14 @@ public class Purchase {
 	@Test
 	public void test() {
 
-		ItemImplementation imp = new ItemImplementation();
+		ItemImplementation itemImpl = new ItemImplementation();
 		SalesImplementation salesImp = new SalesImplementation();
 		EmployeeImplementation cashierImpl = new EmployeeImplementation();
 
 		Sales sale = new Sales();
 		Item item = new Item();
 		Item item1 = new Item();
-		Cashier cashier = new Cashier();
+		Employee cashier = new Employee();
 
 		double totalAmount = 0;
 		double change = 0;
@@ -63,6 +64,7 @@ public class Purchase {
 		listItems.add(item);
 		listItems.add(item1);
 
+		
 		for (Item i : listItems) {
 
 			totalAmount = totalAmount + i.getPrice();
@@ -70,11 +72,13 @@ public class Purchase {
 			System.out.println(totalAmount);
 
 		}
+		
+		totalAmount = salesImp.calcTotalPrice(listItems);
 
-		change = amountPayed - totalAmount;
+		change = salesImp.calculateChange(totalAmount, amountPayed);
 
 		cashier.setFirstName("Pabblo");
-		// cashier.setEmpType("Cashier");
+		//cashier.setEmpNum("Cashier");
 
 		// doing the sale
 
@@ -84,28 +88,28 @@ public class Purchase {
 		sale.setChange(change);
 		sale.setDate(date);
 
-		sale.setCashier(cashier);
-
+        sale.setEmployee(cashier);
 		listSales.add(sale);
 
-		cashier.setSales(listSales);
+		//cashier.setSales(listSales);
 
-		sale.setItems(listItems);
+//		sale.setItems(listItems);//made changes commented by pablo
 
 		item.setSalesList(listSales);
-		item1.setSalesList(listSales);
+		item1.setSalesList(listSales); //changed from List to Set by pablo
 
-		cashierImpl.save(cashier);
+		cashierImpl.saveOrUpdate(cashier);
 
-		salesImp.purchase(sale);
+		salesImp.saveSale(sale);
 
 		item1.setQuantity(item1.getQuantity() - 1);
 		item.setQuantity(item.getQuantity() - 1);
 
-		imp.save(item);
-		imp.save(item1);
+		itemImpl.saveItem(item);
+		itemImpl.saveItem(item1);
 
 		assertNotNull(sale);
 	}
 
 }
+*/

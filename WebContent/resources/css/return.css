@@ -1,0 +1,22 @@
+@CHARSET "ISO-8859-1";
+body { font-family: arial; font-size: 14px; }
+
+.return { padding: 1em; background-color: #EEEEDD; border: 1px solid #CCC; max-width: 655px; }
+.return input { font-family: Arial; }
+.return b { font-weight: bold; }
+.return p { margin-top: 0.9em; margin-bottom: 0.9em; }
+.return select[multiple] { width: 100%; height: 8em; }
+.return h2 { margin-top: 0.4em; font-weight: bold; font-size: 1.2em; }
+
+.return th { text-align: left; font-weight: bold; }
+.return .price { text-align: right; padding-right: 2em; }
+.return .grandTotal { border-top: 1px solid silver; padding-top: 0.5em; font-size: 1.2em; }
+.return .grandTotal SPAN { font-weight: bold; }
+
+.return table, .return td, .return th { padding: 0.2em; border-width: 0; margin: 0; vertical-align: top; }
+.return td input, .return td select { width: 8em; }
+.return td.quantity input { width: 4em; }
+.return td select { height: 1.8em; white-space: nowrap; }
+
+
+li { list-style-type: disc; margin-left: 20px; }

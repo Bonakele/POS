@@ -1,108 +1,62 @@
 package com.pos.controller;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
-import com.google.gson.Gson;
-import com.pos.dao.EmployeeImplementation;
-import com.pos.dao.ItemImplementation;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+
 import com.pos.dao.SalesImplementation;
-import com.pos.model.Cashier;
-import com.pos.model.Item;
+import com.pos.model.Employee;
 import com.pos.model.Sales;
 
 
-/**
- * Servlet implementation class PurchaseController
- */
-@WebServlet("/PurchaseController")
-public class PurchaseController extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public PurchaseController() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+@Path("/PurchaseController")
+public class PurchaseController {
+	
+	SalesImplementation salesDao=new SalesImplementation();
+	@Path(value="/makePurchase")
+	@POST
+    @Consumes(MediaType.APPLICATION_JSON)
+	public Sales createAssetInJson(Sales sales){
+		salesDao.saveSale(sales);    
+		return sales;
+	}
+	
+	
+	@GET
+	@Path("/getAllSales")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String getAllSales() throws JSONException {
+		List<Sales> salesList = salesDao.getAllSales();
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		
-		
+		JSONArray jsonArray = new JSONArray();
+
+		for (int i = 0; i < salesList.size(); i++) {
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("id", salesList.get(i).getId());
+			jsonObject.put("paymentType", salesList.get(i).getPaymentType());
+			jsonObject.put("totalAmount", salesList.get(i).getTotalAmount());
+			jsonObject.put("amountPayed", salesList.get(i).getAmountPayed());
+			jsonObject.put("change", salesList.get(i).getChange());
+			jsonObject.put("date", salesList.get(i).getDate());
+			jsonObject.put("item", salesList.get(i).getItem());
+			jsonObject.put("item", salesList.get(i).getItem());
+			jsonObject.put("employee", salesList.get(i).getEmployee());
+
+			jsonArray.put(jsonObject);
+		}
+
+		return jsonArray.toString();
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		List<Sales>salesList=new ArrayList<Sales>();
-		List<Item>itemsList=new ArrayList<Item>();
-		 Sales sales =new Sales();
-		 Gson gson = new Gson();
-		 
-		double totalAmount=0;
-		double change=0;
-		
-		ItemImplementation itemImp=new ItemImplementation();
-		SalesImplementation sale=new SalesImplementation();
-		int id=Integer.parseInt(request.getParameter("item_id"));
-		//getting Items
-		  Item item=itemImp.getItem(id);
-		  itemsList.add(item);
-		  
-		  for(Item i:itemsList){
-	        	totalAmount=totalAmount+i.getPrice();
-	        			
-	        }
-		  	EmployeeImplementation cashierImp=new EmployeeImplementation();
-	        Cashier cashier=(Cashier) cashierImp.getEmployeeById(1);
-	      
-		// 1. get received JSON data from request
-        BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
-        String jsons = "";
-        if(br != null){
-            jsons = br.readLine();
-        }
-        
-        salesList.add(sales);
-        
-        sales.setCashier(cashier);
-		
-        salesList.add(sales);
-	
-		cashierImp.save(cashier);
-		
-		cashier.setSales(salesList);
-		
-		 sales.setItems(itemsList);
-		 item.setSalesList(salesList);
-		
-		item.setQuantity(item.getQuantity()-1);
-		itemImp.save(item);     
-        
-        sale.purchase(sales);
-        
-        sales=(Sales) gson.fromJson(jsons.toString(), Sales.class);
-        
-        response.getOutputStream().flush();
-     
-    }
 	
 
 }
